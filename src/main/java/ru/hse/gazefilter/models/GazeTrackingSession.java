@@ -1,8 +1,13 @@
 package ru.hse.gazefilter.models;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.util.List;
 
+@Document
 public class GazeTrackingSession {
+    @Id
     private final String uuid;
     private final List<Gaze> gazes;
 
@@ -19,6 +24,10 @@ public class GazeTrackingSession {
         return List.copyOf(gazes);
     }
 
+    /**
+     * append new gazes' data
+     * @param gazes new gazes' data
+     */
     public void addGazes(List<Gaze> gazes) {
         this.gazes.addAll(gazes);
     }
