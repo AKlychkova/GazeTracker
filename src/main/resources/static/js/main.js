@@ -1,6 +1,10 @@
 let WASM_URL = "./gazefilter/gazefilter.wasm";
 let BUFFER_SIZE = 100;
 let buffer = [];
+let heatmap = h337.create({
+    container: document.querySelector('.heatmap'),
+    radius: 70
+});
 
 let sessionStarted = false;
 let currentSessionUuid = null;
@@ -52,7 +56,7 @@ function onStartButtonClick(event) {
         // session has been finished
 
         // Send the remaining coordinates
-        sendCoordinates(currentSessionUuid,buffer.slice());
+        sendCoordinates(currentSessionUuid, buffer.slice());
         // Clean buffer
         buffer = [];
         // Change button text
@@ -126,24 +130,44 @@ function setPosition(element, x, y) {
 function onCoordinatesPredicted(event) {
     if (event.eventType === 2) {                // if face is still here and can be tracked
         let gazePoint = event.bestGazePoint()   // Best gaze point of left or right eye.
-        let x = gazePoint[0];
-        let y = gazePoint[1];
+
+        let x = gazePoint[0];   // x screen coordinate
+        let y = gazePoint[1];   // y screen coordinate
         if (!isNaN(x) && !isNaN(y)) {
             // Write coordinates
             document.getElementById("x").innerText = "x = " + x;
             document.getElementById("y").innerText = "y = " + y;
+
+            let x_window = Math.round(x - window.screenLeft);
+            let y_window = Math.round(y - window.screenTop);
+            let heatmapCanvas = document.querySelector(".heatmap-canvas");
+
             // Set position to X
             setPosition(
                 document.getElementById("target"),
-                Math.round(x - window.screenLeft),
-                Math.round(y - window.screenTop)
+                x_window,
+                y_window
             );
+
+            // Add coordinates to heatmap
+            if (x_window >= 0 && x_window <= heatmapCanvas.width && y_window >= 0 && y_window <= heatmapCanvas.height) {
+                new Promise(function (resolve, reject) {
+                        heatmap.addData({
+                            x: Math.round(x - window.screenLeft),
+                            y: Math.round(y - window.screenTop)
+                        });
+                        resolve();
+                    }
+                ).catch(console.error);
+            }
+
             // Save coordinates to buffer
             buffer.push({
                 timestamp: event.timestamp,
                 x: x,
                 y: y
             });
+
             // Send buffer if it's full
             if (buffer.length >= BUFFER_SIZE) {
                 sendCoordinates(currentSessionUuid, buffer.slice());
@@ -158,19 +182,20 @@ function onCoordinatesPredicted(event) {
  * @param uuid
  * @param coordinates
  */
-function sendCoordinates(uuid, coordinates) {
+async function sendCoordinates(uuid, coordinates) {
     let pack = {
         sessionUuid: uuid,
         gazes: coordinates
     }
-
-    $.ajax({
-        url: "/gaze",
-        type: "post",
-        data: JSON.stringify(pack),
-        contentType: 'application/json',
-        success: function () {
+    await fetch("/gaze", {
+        method: "POST",
+        body: JSON.stringify(pack),
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }).then(response => {
+        if (response.ok) {
             console.log("data have been sent");
         }
-    })
+    });
 }

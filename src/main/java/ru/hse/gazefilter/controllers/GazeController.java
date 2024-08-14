@@ -6,6 +6,8 @@ import ru.hse.gazefilter.models.GazeTrackingRepository;
 import ru.hse.gazefilter.models.GazeTrackingSession;
 import ru.hse.gazefilter.models.Packet;
 
+import java.sql.SQLOutput;
+
 @RestController
 @RequestMapping("/gaze")
 public class GazeController {

@@ -3,17 +3,24 @@
     <head>
         <meta charset="UTF-8">
         <title>Gazefilter test</title>
-        <script src="gazefilter/gazefilter.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <script src="gazefilter/gazefilter.js" type="text/javascript"></script>
+        <script src="heatmap/build/heatmap.js" type="text/javascript"></script>
         <link rel="stylesheet" type="text/css" href="css/style.css">
     </head>
     <body>
-        <!--Для визуализации -->
-        <!--<canvas id="tracker-canvas"></canvas> -->
-        <p id="x">x = </p>
-        <p id="y">y = </p>
+        <div class="heatmap-wrapper">
+            <div class="heatmap">
+
+            </div>
+        </div>
+        <div class="content-wrapper">
+            <!--Для визуализации -->
+            <!--<canvas id="tracker-canvas"></canvas> -->
+            <p id="x">x = </p>
+            <p id="y">y = </p>
+            <button id="start_button">Начать сессию</button>
+        </div>
         <p id="target">X</p>
-        <button id="start_button">Начать сесссию</button>
         <script type="module" src="js/main.js"></script>
     </body>
 </html>

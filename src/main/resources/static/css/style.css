@@ -1,6 +1,31 @@
 body {
-    background-image: url('../imgs/img.png');
+    /* set background */
+    background-image: url('../imgs/img.jpg');
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-size: cover;
+
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.heatmap-wrapper {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.heatmap {
+    width: 100%;
+    height: 100%;
+}
+
+.content-wrapper {
+    position: relative;
+}
+
+#target {
+    position: relative;
 }
