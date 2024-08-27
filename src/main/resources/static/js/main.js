@@ -53,39 +53,44 @@ async function connectDevice() {
 
 function onStartButtonClick(event) {
     if (sessionStarted) {
-        // session has been finished
-
-        // Send the remaining coordinates
-        sendCoordinates(currentSessionUuid, buffer.slice());
-        // Clean buffer
-        buffer = [];
+        // Session has been finished
+        finishSession();
         // Change button text
         event.target.innerText = "Начать сессию";
-        // Change status
-        sessionStarted = false;
-        // Switch off listeners
-        gazefilter.tracker.removeListener("filter", onCoordinatesPredicted)
-        window.removeEventListener("click", onMouseClick);
     } else {
-        //session has been started
-
-        //visualize();
-        calibrate();
-        gazefilter.tracker.addListener("filter", onCoordinatesPredicted)
-        sessionStarted = true;
-        currentSessionUuid = crypto.randomUUID();
-        console.log(`Session with id ${currentSessionUuid} has started`);
+        // Session has been started
+        startSession();
         event.target.innerText = "Завершить сессию";
     }
 }
 
-/**
- *  Visualize real-time face tracking
- */
-function visualize() {
-    let canvas = document.getElementById("tracker-canvas");
-    console.log(canvas);
-    gazefilter.visualizer.setCanvas(canvas);
+function startSession() {
+    // Clean heatmap
+    heatmap.setData({
+        min: 10,
+        max: 1,
+        data: []
+    });
+    // Switch on listeners
+    calibrate();
+    gazefilter.tracker.addListener("filter", onCoordinatesPredicted);
+    // Change status
+    sessionStarted = true;
+    // Create uuid for new session
+    currentSessionUuid = crypto.randomUUID();
+    console.log(`Session with id ${currentSessionUuid} has started`);
+}
+
+function finishSession() {
+    // Send the remaining coordinates
+    sendCoordinates(currentSessionUuid, buffer.slice());
+    // Clean buffer
+    buffer = [];
+    // Change status
+    sessionStarted = false;
+    // Switch off listeners
+    gazefilter.tracker.removeListener("filter", onCoordinatesPredicted)
+    window.removeEventListener("click", onMouseClick);
 }
 
 /**
