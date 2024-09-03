@@ -5,12 +5,20 @@ let heatmap = h337.create({
     container: document.querySelector('.heatmap'),
     radius: 70
 });
+let video = document.getElementById("background-video");
+let startButton = document.getElementById("start_button");
+let calibMessage = document.createElement("p");
+calibMessage.innerHTML = "Необходима калибровка";
+calibMessage.style.position = "relative";
+calibMessage.style.textAlign = "center";
 
 let sessionStarted = false;
+let isCalibrated = false;
 let currentSessionUuid = null;
 
 setUp().then(() => {
-    document.getElementById("start_button").addEventListener("click", onStartButtonClick)
+    startButton.addEventListener("click", onStartButtonClick);
+    video.addEventListener("ended", onVideoEnded);
 });
 
 
@@ -52,16 +60,19 @@ async function connectDevice() {
 }
 
 function onStartButtonClick(event) {
-    if (sessionStarted) {
-        // Session has been finished
-        finishSession();
-        // Change button text
-        event.target.innerText = "Начать сессию";
+    startSession();
+    startButton.style.visibility = "hidden";
+    if(isCalibrated) {
+        startVideo();
     } else {
-        // Session has been started
-        startSession();
-        event.target.innerText = "Завершить сессию";
+        document.body.append(calibMessage);
     }
+}
+
+function onVideoEnded(event) {
+    video.style.visibility = "hidden";
+    finishSession();
+    startButton.style.visibility = "visible";
 }
 
 function startSession() {
@@ -116,8 +127,17 @@ function onMouseClick(event) {
 function onCalib(response) {
     console.log("calibration error: ", response.errorValue);
     if (response.errorCode === 0) {
-        console.log("calibration success");
+        if (isCalibrated === false) {
+            isCalibrated = true;
+            document.body.removeChild(calibMessage);
+            startVideo();
+        }
     }
+}
+
+function startVideo() {
+    video.style.visibility = "visible";
+    video.play();
 }
 
 /**

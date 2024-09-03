@@ -1,12 +1,24 @@
 body {
-    /* set background */
-    background-image: url('../imgs/img.jpg');
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-size: cover;
+    /* set background image */
+    /*background-image: url('../imgs/img.jpg');*/
+    /*background-repeat: no-repeat;*/
+    /*background-attachment: fixed;*/
+    /*background-size: cover;*/
 
     max-width: 100%;
     overflow: hidden;
+}
+
+.background-video {
+    visibility: hidden;
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    z-index: -9999;
 }
 
 .heatmap-wrapper {
